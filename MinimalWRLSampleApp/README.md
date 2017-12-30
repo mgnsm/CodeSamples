@@ -12,4 +12,4 @@ You can compile the code using the `cl.exe` compiler from the command line of a 
 
 `>powershell add-appxpackage –register AppxManifest.xml`
 
-Please refer to the [this](https://blog.magnusmontin.net/2017/12/30/minimal-uwp-wrl-xaml-app/) blog post for more information.
+Please refer to [this](https://blog.magnusmontin.net/2017/12/30/minimal-uwp-wrl-xaml-app/) blog post for more information.
