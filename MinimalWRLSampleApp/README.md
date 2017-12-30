@@ -11,3 +11,5 @@ You can compile the code using the `cl.exe` compiler from the command line of a 
 ...and install it using the `Add-AppxPackage` cmdlet:
 
 `>powershell add-appxpackage –register AppxManifest.xml`
+
+Please refer to the [this](https://blog.magnusmontin.net/2017/12/30/minimal-uwp-wrl-xaml-app/) blog post for more information.
