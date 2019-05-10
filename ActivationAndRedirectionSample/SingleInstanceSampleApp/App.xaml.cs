@@ -17,10 +17,6 @@ namespace SingleInstanceSampleApp
 
         public void OnProtocolActivated(IActivatedEventArgs args)
         {
-            //NOTE: Since there is a new instance of the application being created for each activation,
-            //there will only be a single item added to the Activations source collection.
-            //The implementation is exactly the same as in the "SingleInstance" example where several items are being added
-            //to the same source collection for behavioural comparison reasons.
             switch (args.Kind)
             {
                 case ActivationKind.Protocol:
