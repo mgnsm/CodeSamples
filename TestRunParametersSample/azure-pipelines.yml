@@ -1,0 +1,30 @@
+pool:
+  vmImage: 'ubuntu-16.04'
+
+variables:
+  buildConfiguration: 'release'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages and Build Solution'
+  inputs:
+   command: build
+   projects: 'SampleTests/SampleTests.csproj'
+   arguments: '-c $(buildConfiguration)'
+
+- powershell: |
+   [xml]$doc = Get-Content SampleTests/Settings.runsettings
+   $doc.RunSettings.TestRunParameters.ChildNodes.Item(0).value = '$(password)'
+   $doc.Save("$(Build.SourcesDirectory)/SampleTests/UpdatedSettings.runsettings")
+  displayName: 'Override TestRunParameters'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Sample Tests'
+  inputs:
+   command: test
+   projects: 'SampleTests/SampleTests.csproj'
+   arguments: '-c $(buildConfiguration) --no-build --no-restore -s $(Build.SourcesDirectory)/SampleTests/UpdatedSettings.runsettings'
+
+- powershell: |
+   Remove-Item $(Build.SourcesDirectory)/SampleTests/UpdatedSettings.runsettings
+  displayName: Remove temporary .runsettings file
