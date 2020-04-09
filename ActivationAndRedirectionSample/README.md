@@ -1,4 +1,4 @@
-# Protocol Activation and Redirection In Packaged Apps
+# Protocol Activation and Redirection in Packaged Apps
 
 An example of how to handle Uniform Resource Identifier (URI) protocol and file extension activation in an MSIX or desktop bridge packaged WPF application.
 
