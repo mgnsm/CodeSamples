@@ -68,7 +68,7 @@ The script does the following:
 - Creates the [CI pipeline](../build/ci-pipeline.yml) (assuming there is no existing pipeline named "CI-Pipeline" in the team project).
 - Sets the 'azureContainerRegistryName' variable that is used in the YAML file to the name of the ACR as specified by the script's last parameter.
 - Sets the 'servicePrincipalObjectId' variable, that is also referred to in the YAML file, to the object id of the service principal that the app service will use to authenticate against the ACR.
-- Creates the [CD pipeline](../build/ci-pipeline.yml) (assuming there is no existing pipeline named "CD-Pipeline" in the team project).
+- Creates the [CD pipeline](../release/cd-pipeline.yml) (assuming there is no existing pipeline named "CD-Pipeline" in the team project).
 - Sets the "azureContainerRegistryName" and "azureWebAppName" variables that are used in the YAML file to the values of the last and second last script parameters respectively.
 - Sets the "servicePrincipalAppId" and "servicePrincipalPassword" variables that are required for the WebApp created by the [ARM template](../deploy/azure/webapp/azuredeploy.json) to be able to authenticate against the ACR. The latter is defined as a [secret variable](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?WT.mc_id=AZ-MVP-5001077&view=azure-devops&tabs=yaml%2Cbatch#secret-variables).
  
