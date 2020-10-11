@@ -1,0 +1,89 @@
+parameters:
+- name: environment
+  displayName: Environment
+  type: string
+  default: QA
+  values:
+  - QA
+  - Production
+
+variables:
+  azureServiceConnection: 'AzureServiceConnection'
+  azureLocation: 'westeurope'
+  azureResourceGroup: 'rg-containerized-microservice-sample'
+  azureAppServicePlan: 'plan-codesamples'
+  dockerImageName: 'mgnsm/containerized.microservice'
+  qaSuffix: '-qa'
+  ${{ if and(eq(variables['Build.Reason'], 'ResourceTrigger'), eq(variables['Build.SourceBranchName'], 'master')) }}:
+    environment: 'Production'
+    realAzureWebAppName: $(azureWebAppName)
+  ${{ if and(eq(variables['Build.Reason'], 'ResourceTrigger'), ne(variables['Build.SourceBranchName'], 'master')) }}:
+    environment: 'QA'
+    realAzureWebAppName: $(azureWebAppName)$(qaSuffix)
+  ${{ if and(eq(variables['Build.Reason'], 'Manual'), eq(parameters.environment, 'Production')) }}:
+    environment: 'Production'
+    realAzureWebAppName: $(azureWebAppName)
+  ${{ if and(eq(variables['Build.Reason'], 'Manual'), ne(parameters.environment, 'Production')) }}:
+    environment: 'QA'
+    realAzureWebAppName: $(azureWebAppName)$(qaSuffix)
+# Variables to be defined in Azure DevOps:
+# azureContainerRegistryName
+# azureWebAppName
+# servicePrincipalAppId
+# servicePrincipalPassword
+
+resources:
+  pipelines:
+  - pipeline: CD-Pipeline
+    source: CI-Pipeline
+    trigger:
+      branches:
+        include:
+        - master
+        - development
+
+trigger: none
+pr: none
+
+jobs:
+- deployment: Deploy
+  displayName: Deploy to Azure Web App for Containers
+  pool:
+    vmImage: 'ubuntu-latest'
+  environment: $(environment)
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Create Or Update the Azure Web App For Containers
+          inputs:
+            ConnectedServiceName: $(azureServiceConnection)
+            resourceGroupName: $(azureResourceGroup)
+            location: $(azureLocation)
+            csmFile: $(System.DefaultWorkingDirectory)/ContainerizedNetCoreMicroserviceDevOpsSample/deploy/azure/webapp/azuredeploy.json
+            overrideParameters: >- 
+              -appServicePlanName $(azureAppServicePlan)
+              -webAppName $(realAzureWebAppName)
+              -containerRegistryName $(azureContainerRegistryName)
+              -dockerImageName $(dockerImageName)
+              -dockerTag $(resources.pipeline.CD-Pipeline.runName)
+              -containerRegistryUsername $(servicePrincipalAppId)
+              -containerRegistryPassword $(servicePrincipalPassword)
+
+        - task: GitHubRelease@0
+          displayName: Create a GitHub Release
+          condition: and(succeeded(), eq(variables['environment'], 'Production'))
+          inputs:
+            gitHubConnection: 'GitHubServiceConnection'
+            repositoryName: '$(Build.Repository.Name)'
+            action: create
+            target: '$(Build.SourceVersion)'
+            tagSource: manual
+            tag: 'containerized-microservice-v$(resources.pipeline.CD-Pipeline.runName)'   
+            title: 'Containerized Microservice v$(resources.pipeline.CD-Pipeline.runName)'
+            assets: ''
+            isDraft: true
+            addChangeLog: true

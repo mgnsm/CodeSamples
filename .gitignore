@@ -1,4 +1,8 @@
-﻿.vs/
-obj/
-bin/
+﻿*.suo
 *.user
+packages/
+.vs/
+[Oo]bj/
+[Bb]in/
+launchSettings.json
+[Tt]est[Rr]esult*/

@@ -1,0 +1,22 @@
+parameters:
+- name: dockerImageName
+  type: string
+- name: dockerfile
+  type: string
+- name: sourceBranchName
+  type: string
+- name: tag
+  type: string
+
+steps:
+- task: Docker@2
+  displayName: Build Image and Test
+  inputs:
+    repository: ${{ parameters.dockerImageName }}
+    command: build
+    dockerfile: ${{ parameters.dockerfile }}
+    buildContext: $(Build.Repository.LocalPath)/ContainerizedNetCoreMicroserviceDevOpsSample/src
+    tags: |
+      ${{ parameters.tag }}
+      latest${{ parameters.sourceBranchName }}
+    arguments: --build-arg version=${{ parameters.tag }}

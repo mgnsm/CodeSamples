@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-bionic AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-bionic AS build
+ARG version
+WORKDIR /src
+COPY ["Containerized.Microservice/Containerized.Microservice.csproj", "Containerized.Microservice/Containerized.Microservice.csproj"]
+COPY ["Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj", "Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj"]
+RUN dotnet restore "Containerized.Microservice/Containerized.Microservice.csproj"
+RUN dotnet restore "Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj"
+COPY . .
+WORKDIR /src
+RUN dotnet build "Containerized.Microservice/Containerized.Microservice.csproj" --no-restore -c Release -p:Version=$version
+RUN dotnet test "Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj" --no-restore -c Release
+
+FROM build AS publish
+WORKDIR /src/Containerized.Microservice
+RUN dotnet publish "Containerized.Microservice.csproj" --no-restore --no-build -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Containerized.Microservice.dll"]

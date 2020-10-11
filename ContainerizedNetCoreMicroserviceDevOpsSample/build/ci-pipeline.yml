@@ -1,0 +1,125 @@
+variables:
+  azureServiceConnection: 'AzureServiceConnection'
+  azureLocation: 'westeurope'
+  azureResourceGroup: 'rg-containerized-microservice-sample'
+  azureAppServicePlan: 'plan-codesamples'
+  dockerImageName: 'mgnsm/containerized.microservice'
+  major: 1
+  minor: 0
+  patch: $[counter(format('{0}{1}{2}', variables['major'], variables['minor'], variables['Build.SourceBranchName']), 0)]
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    branchTag: ''
+  ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+    branchTag: -${{ variables['Build.SourceBranchName'] }}
+# Variables to be defined in Azure DevOps:
+# azureContainerRegistryName
+# servicePrincipalObjectId
+
+name: $(major).$(minor).$(patch)$(branchTag)
+
+trigger:
+  branches:
+    include:
+    - master
+    - development
+  paths:
+    include:
+    - ContainerizedNetCoreMicroserviceDevOpsSample/src/*
+    - ContainerizedNetCoreMicroserviceDevOpsSample/build/azure-devops/*
+
+pr:
+  branches:
+    include:
+    - master
+    - development
+  paths:
+    include:
+    - ContainerizedNetCoreMicroserviceDevOpsSample/src/*
+    - ContainerizedNetCoreMicroserviceDevOpsSample/build/azure-devops/*
+
+jobs:
+- job: BuildContainerForPR_Linux
+  condition: eq('${{ variables['Build.Reason'] }}', 'PullRequest')
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - template: templates/build-image.yml
+    parameters:
+      dockerImageName: $(dockerImageName)
+      dockerfile: ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice/Dockerfile.Linux
+      sourceBranchName: $(branchTag)
+      tag: $(Build.BuildNumber)
+
+- job: BuildContainerForPR_Windows
+  condition: eq('${{ variables['Build.Reason'] }}', 'PullRequest')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: templates/build-image.yml
+    parameters:
+      dockerImageName: $(dockerImageName)
+      dockerfile: ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice/Dockerfile.Windows
+      sourceBranchName: $(branchTag)
+      tag: $(Build.BuildNumber)
+
+- job: BuildForPR_macOS
+  condition: eq('${{ variables['Build.Reason'] }}', 'PullRequest')
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+
+  - task: UseDotNet@2
+    displayName: 'Install the .NET Core SDK'
+    inputs:
+      version: 3.1.x
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build'
+    inputs:
+      command: build
+      projects: |
+        ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice/Containerized.Microservice.csproj
+        ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj
+      arguments: '-c Release'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Test'
+    inputs:
+      command: test
+      projects: 'ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice.UnitTests/Containerized.Microservice.UnitTests.csproj'
+      arguments: '-c Release --no-build --no-restore'
+
+- job: BuildContainerAndPushToAzure
+  displayName: Build and Push Docker Container to ACR
+  condition: ne('${{ variables['Build.Reason'] }}', 'PullRequest')
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - template: templates/build-image.yml
+    parameters:
+      dockerImageName: $(dockerImageName)
+      dockerfile: ContainerizedNetCoreMicroserviceDevOpsSample/src/Containerized.Microservice/Dockerfile.Linux
+      sourceBranchName: $(branchTag)
+      tag: $(Build.BuildNumber)
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Create an Azure Container Registry (ACR)
+    inputs:
+      ConnectedServiceName: $(azureServiceConnection)
+      resourceGroupName: $(azureResourceGroup)
+      location: $(azureLocation)
+      csmFile: $(System.DefaultWorkingDirectory)/ContainerizedNetCoreMicroserviceDevOpsSample/deploy/azure/acr/azuredeploy.json
+      overrideParameters: -name $(azureContainerRegistryName) -servicePrincipalObjectId $(servicePrincipalObjectId)
+
+  - task: AzureCLI@2
+    displayName: Push Image to the ACR
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      failOnStandardError: true
+      inlineScript: |
+        az acr login --name $(azureContainerRegistryName)
+        docker tag $(dockerImageName):latest$(branchTag) $(azureContainerRegistryName).azurecr.io/$(dockerImageName):latest$(branchTag)
+        docker tag $(dockerImageName):$(Build.BuildNumber) $(azureContainerRegistryName).azurecr.io/$(dockerImageName):$(Build.BuildNumber)
+        docker push $(azureContainerRegistryName).azurecr.io/$(dockerImageName):$(Build.BuildNumber)
