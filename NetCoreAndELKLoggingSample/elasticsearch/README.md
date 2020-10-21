@@ -14,5 +14,5 @@ You can override the default sample credentials by setting the corresponding env
 
 Alternatively, you could run the script manually and pass the passwords as parameters to it:
 
-   docker run -d -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=true" -e "ELASTIC_PASSWORD=secret1" docker.elastic.co/elasticsearch/elasticsearch:7.9.2
-   sh setup.sh localhost:9200 elastic secret1 secret2 secret3 secret4
+    docker run -d -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=true" -e "ELASTIC_PASSWORD=secret1" docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    sh setup.sh localhost:9200 elastic secret1 secret2 secret3 secret4
