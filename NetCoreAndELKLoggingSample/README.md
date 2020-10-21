@@ -57,7 +57,7 @@ To be able to build and run the sample consumer app, which is the only component
 You can also start the containers and debug and run the sample code using an up-to-date version of Visual Studio 2019 with the **.NET Core cross-platform development** workload installed:
 
 1. Open the [solution](NetCoreAndELKLoggingSample.sln) file.
-2. Right-click on the `docker-compose` project in the **Solution Explorer** and select **Set as Startup Project***. If you also want to start the consumer,[set multiple startup projects](https://docs.microsoft.com/en-us/visualstudio/ide/how-to-set-multiple-startup-projects?WT.mc_id=DOP-MVP-5001077).
+2. Right-click on the `docker-compose` project in the **Solution Explorer** and select **Set as Startup Project***. If you also want to start the consumer, [set multiple startup projects](https://docs.microsoft.com/en-us/visualstudio/ide/how-to-set-multiple-startup-projects?WT.mc_id=DOP-MVP-5001077).
 3. Press F5 (or choose **Debug**->**Start Debugging** on the menu bar) to start with the debugger attached or press Ctrl + F5 (or choosing **Debug**->**Start Without Debugging** on the menu bar) to start without debugging.
 
 ## Questions and Feedback
