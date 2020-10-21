@@ -1,0 +1,37 @@
+﻿[
+{"namespace": "AvroTypes.v1",
+ "type" : "enum",
+ "name" : "LogLevel",
+ "symbols" : ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"]
+},
+{"namespace": "AvroTypes.v1",
+ "type": "record",
+ "name": "EventId",
+ "fields": [
+    {"name": "Id", "type": "int"},
+    {"name": "Name", "type": ["null", "string"]}
+ ]
+},
+{"namespace": "AvroTypes.v1",
+ "type": "record",
+ "name": "Exception",
+ "fields": [
+    {"name": "StackTrace", "type": ["null", "string"]},
+    {"name": "Source", "type": ["null", "string"]},
+    {"name": "Message", "type": ["null", "string"]},
+    {"name": "HResult", "type": "int"},
+    {"name": "HelpLink", "type": ["null", "string"]}
+ ]
+},
+{"namespace": "AvroTypes.v1",
+ "type": "record",
+ "name": "LogMessage",
+ "fields": [
+	  {"name": "LogLevel", "type": "LogLevel"},
+    {"name": "EventId", "type": ["null", "EventId"]},
+    {"name": "Exception", "type": ["null", "Exception"]},
+	  {"name": "Message", "type": ["null", "string"]},
+    {"name": "Timestamp", "type": "long"}
+ ]
+}
+]

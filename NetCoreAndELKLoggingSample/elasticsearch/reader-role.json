@@ -1,0 +1,8 @@
+{
+  "indices": [
+   {
+    "names": [ "log-*", "logs" ],
+    "privileges": ["read"]
+   }
+  ]
+}

@@ -1,0 +1,5 @@
+﻿A sample .NET Core console app that uses [Confluent.Kafka](https://github.com/confluentinc/confluent-kafka-dotnet) to produce log messages to a Kafka topic using compiler-generated Avro types.
+
+The [KafkaLogger](KafkaLogger.cs) class is an example of a custom .NET Core logger that implements the `ILogger` interface that is included in the .NET Core SDK and the [Microsoft.Extensions.Logging.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions) NuGet package. It's dependency injected with a `Confluent.Kafka.IProducer<TKey, TValue>` and internally uses the `Channel<T>` API in [System.Threading.Channels](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions) to write the log messages to Kafka on a dedicated background thread. 
+
+It also uses the classes in the [Microsoft.Extensions.ObjectPool](https://www.nuget.org/packages/Microsoft.Extensions.ObjectPool) package to pool and reuse instances of the frequently allocated `AvroTypes.v1.LogMessage` and `Confluent.Kafka.Message<TKey, TValue>` classes.

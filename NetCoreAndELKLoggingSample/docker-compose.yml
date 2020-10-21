@@ -1,0 +1,131 @@
+version: '3.4'
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "12181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zk-data:/var/lib/zookeeper/data
+      - zk-txn-logs:/var/lib/zookeeper/log
+
+  kafka-broker:
+    image: confluentinc/cp-kafka:6.0.0
+    hostname: kafka-broker
+    container_name: kafka-broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    restart: on-failure
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.0.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - kafka-broker
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-broker:29092'
+    restart: on-failure
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    hostname: elasticsearch
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=elasticsearch-docker-cluster
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      - ELASTIC_READ_ONLY_USER_PASSWORD=${ELASTIC_READ_ONLY_USER_PASSWORD}
+      - LOGSTASH_WRITER_PASSWORD=${LOGSTASH_WRITER_PASSWORD}
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - ./elasticsearch:/usr/local/setup
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    entrypoint: []
+    command: >
+      sh -c "(/usr/local/setup/setup.sh localhost:9200 elastic $ELASTIC_PASSWORD $KIBANA_SYSTEM_PASSWORD $ELASTIC_READ_ONLY_USER_PASSWORD $LOGSTASH_WRITER_PASSWORD &) &&
+             /usr/local/bin/docker-entrypoint.sh eswrapper"
+
+  logstash:
+    image: ${DOCKER_REGISTRY-}logstash
+    container_name: logstash
+    build:
+      context: .
+      dockerfile: logstash/Dockerfile
+    depends_on:
+      - elasticsearch
+    environment:
+      - xpack.monitoring.enabled=false
+      - LOGSTASH_WRITER_PASSWORD=${LOGSTASH_WRITER_PASSWORD}
+    restart: on-failure
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    hostname: kibana
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      - MONITORING_ENABLED=false
+      - XPACK_SECURITY_ENCRYPTIONKEY=${KIBANA_ENCRYPTIONKEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTIONKEY}
+      - XPACK_REPORTING_ENABLED=false
+    restart: on-failure
+
+  kafka-producer:
+    image: ${DOCKER_REGISTRY-}kafka-producer
+    container_name: kafka-producer
+    build:
+      context: .
+      dockerfile: KafkaProducer/Dockerfile
+    depends_on:
+      - schema-registry
+      - elasticsearch
+    environment:
+      BOOTSTRAP_SERVERS: 'kafka-broker:29092'
+      SCHEMA_REGISTRY_URL: 'schema-registry:8081'
+    restart: on-failure
+
+volumes:
+  zk-data:
+    driver: local
+  zk-txn-logs:
+    driver: local
+  kafka-data:
+    driver: local
+  elasticsearch-data:
+    driver: local

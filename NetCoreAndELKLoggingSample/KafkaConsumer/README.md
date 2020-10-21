@@ -1,0 +1,1 @@
+﻿A sample .NET Core console client app that uses [Confluent.Kafka](https://github.com/confluentinc/confluent-kafka-dotnet) to consume the log messages from a Kafka topic in real-time and then prints them to the console.

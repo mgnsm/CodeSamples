@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "KafkaConsumer": {
+      "commandName": "Project",
+      "commandLineArgs": "localhost:9092 localhost:8081"
+    }
+  }
+}

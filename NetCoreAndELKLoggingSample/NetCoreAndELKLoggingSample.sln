@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvroTypes", "AvroTypes\AvroTypes.csproj", "{70337078-6AEA-4704-AA20-E4B921A7F0E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaConsumer", "KafkaConsumer\KafkaConsumer.csproj", "{57755D70-6538-43D4-9AEE-1B277762E314}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaProducer", "KafkaProducer\KafkaProducer.csproj", "{8DFF86D2-B9E4-4454-8C03-A46887E4232B}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{36A4A436-522B-4910-8D97-7D4EF42F9BC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "elasticsearch", "elasticsearch", "{3593E36B-171A-4E65-BC20-D59542906563}"
+	ProjectSection(SolutionItems) = preProject
+		elasticsearch\index-template.json = elasticsearch\index-template.json
+		elasticsearch\reader-role.json = elasticsearch\reader-role.json
+		elasticsearch\retention-policy.json = elasticsearch\retention-policy.json
+		elasticsearch\setup.sh = elasticsearch\setup.sh
+		elasticsearch\writer-role.json = elasticsearch\writer-role.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logstash", "logstash", "{286CF7CC-DD9E-4BA5-A2C3-8DC2530135F4}"
+	ProjectSection(SolutionItems) = preProject
+		logstash\Dockerfile = logstash\Dockerfile
+		logstash\kafka-pipeline.conf = logstash\kafka-pipeline.conf
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Debug|x64.Build.0 = Debug|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Release|x64.ActiveCfg = Release|Any CPU
+		{70337078-6AEA-4704-AA20-E4B921A7F0E6}.Release|x64.Build.0 = Release|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Debug|x64.Build.0 = Debug|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Release|x64.ActiveCfg = Release|Any CPU
+		{57755D70-6538-43D4-9AEE-1B277762E314}.Release|x64.Build.0 = Release|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Debug|x64.Build.0 = Debug|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Release|x64.ActiveCfg = Release|Any CPU
+		{8DFF86D2-B9E4-4454-8C03-A46887E4232B}.Release|x64.Build.0 = Release|Any CPU
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Debug|x64.ActiveCfg = Debug|x64
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Debug|x64.Build.0 = Debug|x64
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Release|x64.ActiveCfg = Release|x64
+		{36A4A436-522B-4910-8D97-7D4EF42F9BC7}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E62AC79A-FF67-4B21-B0F7-A0474CF2C2DA}
+	EndGlobalSection
+EndGlobal
