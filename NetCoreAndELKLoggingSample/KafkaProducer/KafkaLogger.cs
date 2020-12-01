@@ -54,8 +54,7 @@ namespace KafkaProducer
                 logMessage.LogLevel = logLevel.GetLogLevel();
                 logMessage.EventId = eventId.GetEventId();
                 logMessage.Exception = exception.GetException();
-                if (state is string message)
-                    logMessage.Message = message;
+                logMessage.Message = state?.ToString();
                 logMessage.Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                 _channel.Writer.TryWrite(logMessage);
